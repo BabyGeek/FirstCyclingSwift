@@ -11,11 +11,14 @@ let package = Package(
             name: "FirstCyclingSwift",
             targets: ["FirstCyclingSwift"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.6.0"),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "FirstCyclingSwift"),
+            name: "FirstCyclingSwift", dependencies: ["SwiftSoup"]),
         .testTarget(
             name: "FirstCyclingSwiftTests",
             dependencies: ["FirstCyclingSwift"]),
