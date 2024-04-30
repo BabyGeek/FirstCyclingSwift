@@ -5,6 +5,13 @@ import PackageDescription
 
 let package = Package(
     name: "FirstCyclingSwift",
+    platforms: [
+        .iOS(.v14),
+        .watchOS(.v8),
+        .macOS(.v11),
+        .macCatalyst(.v14),
+        .tvOS(.v13)
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
