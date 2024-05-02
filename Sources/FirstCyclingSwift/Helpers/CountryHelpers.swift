@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CountryHelpers {
+internal struct CountryHelpers {
     static func countryFlagEmoji(for countryCode: String?) -> String? {
         guard let countryCode, countryCode.count == 2 else { return nil }
         
