@@ -9,18 +9,18 @@ import XCTest
 @testable import FirstCyclingSwift
 
 final class FirstCyclingSwiftRaceListTests: XCTestCase {
-    var raceProvider: FirstCyclingRace!
+    var raceProvider: FirstCyclingRaceEndpointHandler!
     var mockDataLoader: MockDataLoader!
     
     override func setUp() {
         super.setUp()
         
         mockDataLoader = MockDataLoader(mockData: [
-            URL(string: "https://firstcycling.com/race.php")!: "mockRaceListData",
-            URL(string: "https://firstcycling.com/race.php?y=2024&t=2")!: "mockRaceListFilterByYearAndTypeData",
+            "https://firstcycling.com/race.php?": .mockRaceListData,
+            "https://firstcycling.com/race.php?y=2024&t=2": .mockRaceListFilterByYearAndTypeData,
         ])
         
-        raceProvider = FirstCyclingRace(urlDataLoader: mockDataLoader)
+        raceProvider = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
     }
     
     override func tearDown() {
@@ -52,9 +52,9 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
     }
     
     func testFetchingRaceListWithParameters() async throws {
-        let parameters = RaceListQueryParameters(
-            type: RaceType(name: "UCI", value: 2),
-            year: "2024",
+        let parameters = FirstCyclingRaceListQueryParameters(
+            type: FirstCyclingRaceType.RaceType(name: "UCI", value: 2),
+            year: "2024"
         )
         
         let raceList = try await raceProvider.fetchRaceList(withParameters: parameters)
