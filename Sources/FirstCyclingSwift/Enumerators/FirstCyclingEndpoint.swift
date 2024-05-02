@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FirstCyclingEndpoint {
+internal enum FirstCyclingEndpoint {
     case race
     case raceDetails(id: Int)
     case raceEdition(id: Int, year: Int)
@@ -16,12 +16,10 @@ enum FirstCyclingEndpoint {
         switch self {
             case .race, .raceDetails, .raceEdition:
                 return Constants.FirstCyclingLinks.Endpoint.race
-            default:
-                return ""
         }
     }
     
-    func getURL(withQueryItems additionalQueryItems: [URLQueryItem]? = nil) -> URL? {
+    internal func getURL(withQueryItems additionalQueryItems: [URLQueryItem]? = nil) -> URL? {
         var components = URLComponents()
         components.scheme = Constants.FirstCyclingLinks.schema
         components.host = Constants.FirstCyclingLinks.baseURL
@@ -29,7 +27,7 @@ enum FirstCyclingEndpoint {
         
         var mandatoryQueryItems = buildMandatoryQueryItems()
         
-        if let additionalQueryItems {
+        if let additionalQueryItems, !additionalQueryItems.isEmpty {
             mandatoryQueryItems.append(contentsOf: additionalQueryItems)
         }
         
@@ -38,7 +36,7 @@ enum FirstCyclingEndpoint {
         return components.url
     }
     
-    func buildMandatoryQueryItems() -> [URLQueryItem] {
+    internal func buildMandatoryQueryItems() -> [URLQueryItem] {
         switch self {
             case .raceDetails(let id):
                 return [.init(name: "r", value: id.formatted())]
