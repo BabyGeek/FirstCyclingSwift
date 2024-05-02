@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct URLDataLoader: DataLoader {
+struct URLDataLoader: FirstCyclingDataLoader {
     static let shared: URLDataLoader = .init()
     
     func fetchContent(from url: URL) async throws -> String {
@@ -17,11 +17,11 @@ struct URLDataLoader: DataLoader {
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
-            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+            throw FirstCyclingDataError.invalidResponse
         }
         
         guard let htmlString = String(data: data, encoding: .utf8) else {
-            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to convert data to string"])
+            throw FirstCyclingConvertError.serializationError("Unable to convert data to string")
         }
         
         return htmlString

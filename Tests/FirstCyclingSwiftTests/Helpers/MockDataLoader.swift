@@ -8,7 +8,7 @@
 import Foundation
 import FirstCyclingSwift
 
-struct MockDataLoader: DataLoader {
+struct MockDataLoader: FirstCyclingDataLoader {
     private var mockData: [String: Mocks]
     
     init(mockData: [String: Mocks]) {
