@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol HTMLParsingCoordinator {
+internal protocol HTMLParsingCoordinator {
     func parseHTMLDataTable(_ htmlString: String) throws -> ParsedTable
 }
