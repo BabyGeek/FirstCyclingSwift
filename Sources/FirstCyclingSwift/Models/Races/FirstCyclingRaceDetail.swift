@@ -12,5 +12,13 @@ public struct FirstCyclingRaceDetail: Codable, Equatable {
     public let name: String
     public let countryName: String
     public var statistics: FirstCyclingRaceDetailStatistic?
-    public let editions: [FirstCyclingRaceEditionSummary]?
+    public var editions: [FirstCyclingRaceEditionSummary]?
+    
+    init(id: Int, name: String, countryName: String, statistics: FirstCyclingRaceDetailStatistic? = nil, editions: [FirstCyclingRaceEditionSummary]? = nil) {
+        self.id = id
+        self.name = name
+        self.countryName = countryName
+        self.statistics = statistics
+        self.editions = editions
+    }
 }

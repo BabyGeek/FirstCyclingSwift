@@ -71,7 +71,6 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
             id: id,
             name: additionalInformations.title,
             countryName: additionalInformations.additionalInformations.first ?? "Not found",
-            statistics: nil,
             editions: editions
         )
         
