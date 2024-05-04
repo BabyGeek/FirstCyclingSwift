@@ -8,7 +8,7 @@
 import XCTest
 @testable import FirstCyclingSwift
 
-final class FirstCyclingRaceModelTests: XCTestCase {
+final class FirstCyclingRaceSummaryModelTests: XCTestCase {
     func testInitInvalidStartDate() {
         let invalidDateRange = "31-12"
         let id = 1
