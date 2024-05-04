@@ -17,7 +17,7 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
         
         mockDataLoader = MockDataLoader(mockData: [
             "https://firstcycling.com/race.php?": .mockRaceListData,
-            "https://firstcycling.com/race.php?y=2024&t=2": .mockRaceListFilterByYearAndTypeData,
+            "https://firstcycling.com/race.php?t=2&y=2024": .mockRaceListFilterByYearAndTypeData,
         ])
         
         raceProvider = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
@@ -62,17 +62,6 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
         XCTAssertNotNil(raceList, "Race list should not be nil")
         XCTAssertFalse(raceList.isEmpty, "Race list should not be empty")
         
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM"
-        let expectedDateString = "01.04"
-        guard let expectedDate = dateFormatter.date(from: expectedDateString) else {
-            XCTFail("Failed to create date from expected date string")
-            return
-        }
-        
-        
-        
         let expectedFirstRace = FirstCyclingRace(
             id: 295,
             dateRange: "01.04",
@@ -88,5 +77,36 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
         
         XCTAssertEqual(raceList.first, expectedFirstRace, "First race should be equal to the expected first race")
     }
-
+    
+    func testEmptyDataError() async {
+        let mockDataLoader = MockEmptyDataLoader()
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            _ = try await handler.fetchRaceList()
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingDataError.emptyData {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testDecodingError() async {
+        let mockDataLoader = MockDataLoader(mockData: [
+            "https://firstcycling.com/race.php?": .mockRaceEditionData,
+        ])
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            _ = try await handler.fetchRaceList()
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingConvertError.decodingError {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 }
