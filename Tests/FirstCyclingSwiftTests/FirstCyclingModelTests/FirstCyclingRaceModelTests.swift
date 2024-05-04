@@ -17,7 +17,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
         let flag: String? = nil
         let winner: FirstCyclingRider? = nil
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: id,
             dateRange: invalidDateRange,
             name: name,
@@ -37,7 +37,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
         let flag: String? = nil
         let winner: FirstCyclingRider? = nil
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: id,
             dateRange: invalidDateRange,
             name: name,
@@ -57,7 +57,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
         let flag: String? = nil
         let winner: FirstCyclingRider? = nil
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: id,
             dateRange: invalidDateRange,
             name: name,
@@ -77,7 +77,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
         let flag: String? = nil
         let winner: FirstCyclingRider? = nil
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: id,
             dateRange: validDateRange,
             name: name,
@@ -97,7 +97,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
         let flag: String? = nil
         let winner: FirstCyclingRider? = nil
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: id,
             dateRange: validDateRange,
             name: name,
@@ -112,7 +112,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
     func testDisplayDatesWithStartDateOnly() {
         let validStartDate = "01.01"
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: 5,
             dateRange: validStartDate,
             name: "Test Race",
@@ -131,7 +131,7 @@ final class FirstCyclingRaceModelTests: XCTestCase {
     func testDisplayDatesWithStartAndEndDate() {
         let validDateRange = "01.01-31.12"
         
-        let race = FirstCyclingRace(
+        let race = FirstCyclingRaceSummary(
             id: 6,
             dateRange: validDateRange,
             name: "Test Race",

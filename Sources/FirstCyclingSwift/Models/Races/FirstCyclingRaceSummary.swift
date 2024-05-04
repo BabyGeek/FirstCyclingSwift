@@ -1,5 +1,5 @@
 //
-//  FirstCyclingRace.swift
+//  FirstCyclingRaceSummary.swift
 //  
 //
 //  Created by Paul Oggero on 30/4/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct FirstCyclingRace: Identifiable, Codable, Equatable {
+public struct FirstCyclingRaceSummary: Identifiable, Codable, Equatable {
     public let id: Int
     public let name: String
     public let category: String

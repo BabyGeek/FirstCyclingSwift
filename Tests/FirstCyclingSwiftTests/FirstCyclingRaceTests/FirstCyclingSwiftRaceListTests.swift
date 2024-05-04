@@ -35,7 +35,7 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
         XCTAssertNotNil(raceList, "Race list should not be nil")
         XCTAssertFalse(raceList.isEmpty, "Race list should not be empty")
         
-        let expectedFirstRace = FirstCyclingRace(
+        let expectedFirstRace = FirstCyclingRaceSummary(
             id: 1,
             dateRange: "16.01-21.01",
             name: "Tour Down Under",
@@ -62,7 +62,7 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
         XCTAssertNotNil(raceList, "Race list should not be nil")
         XCTAssertFalse(raceList.isEmpty, "Race list should not be empty")
         
-        let expectedFirstRace = FirstCyclingRace(
+        let expectedFirstRace = FirstCyclingRaceSummary(
             id: 295,
             dateRange: "01.04",
             name: "Giro del Belvedere",
