@@ -61,36 +61,77 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         
         guard !data.isEmpty else { throw FirstCyclingDataError.emptyData }
         
-        var editions: [FirstCyclingRaceEditionSummary] = try convertDataResults(
-            fromData: try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
-        )
-        
-        sortEditions(&editions, by: sortCriterion, order: sortOrder)
-        
-        var raceDetail: FirstCyclingRaceDetail = .init(
-            id: id,
-            name: additionalInformations.title,
-            countryName: additionalInformations.additionalInformations.first ?? "Not found",
-            editions: editions
-        )
-        
-        if let statistics {
-            raceDetail.statistics = try await fetchRaceDetailsStatistics(withID: id, andStatistics: statistics)
+        do {
+            var editions: [FirstCyclingRaceEditionSummary] = try convertDataResults(
+                fromData: try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+            )
+            
+            
+            sortEditions(&editions, by: sortCriterion, order: sortOrder)
+            
+            var raceDetail: FirstCyclingRaceDetail = .init(
+                id: id,
+                name: additionalInformations.title,
+                countryName: additionalInformations.additionalInformations.first ?? "Not found",
+                editions: editions
+            )
+            
+            if let statistics {
+                raceDetail.statistics = try await fetchRaceDetailsStatistics(withID: id, andStatistics: statistics)
+            }
+            
+            return raceDetail
+        } catch {
+            throw error
         }
-        
-        return raceDetail
     }
     
-    public func fetchRaceDetailsStatistics(withID id: Int, andStatistics statistics: FirstCyclingRaceDetailStatisticType = .all) async throws -> FirstCyclingRaceDetailStatistic {
-        guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL() else {
+    public func fetchRaceDetailsStatistics(withID id: Int, andStatistics statisticType: FirstCyclingRaceDetailStatisticType = .all) async throws -> FirstCyclingRaceDetailStatistic {
+        var statistics: FirstCyclingRaceDetailStatistic = .init()
+        
+        switch statisticType {
+            case .byYear:
+                statistics.byYear = try await fetchRaceDetailsStatisticsByYear(withID: id)
+            case .byVictories:
+                statistics.byVictories = try await fetchRaceDetailsStatisticsByVictories(withID: id)
+            case .all:
+                statistics.byYear = try await fetchRaceDetailsStatisticsByYear(withID: id)
+                statistics.byVictories = try await fetchRaceDetailsStatisticsByVictories(withID: id)
+        }
+        
+        return statistics
+    }
+    
+    internal func fetchRaceDetailsStatisticsByYear(withID id: Int) async throws -> [FirstCyclingRaceStatisticByYear] {
+        guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "X")]) else {
             throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL()))
         }
         
-        let parserCoordinator = TableParserCoodinator(
-            columnParser: RaceListColumnParser(
+        let parserCoordinator = RaceDetailStatisticByYearTableParserCoodinator(
+            columnParser: RaceDetailStatisticByYearColumnParser(
                 flagParserDelegate: MainFlagParser()
             )
         )
+        
+        let htmlString = try await urlDataLoader.fetchContent(from: url)
+        let data = try (parserCoordinator.parse(htmlString) as! [ParsedRaceDetailStatisticsTable])
+                
+        guard !data.isEmpty else { throw FirstCyclingDataError.emptyData }
+        
+        do {
+            return try convertDataResults(fromData: try JSONSerialization.data(withJSONObject: data.map({ $0.toDictionnary() }), options: .prettyPrinted))
+        } catch {
+            throw error
+        }
+    }
+    
+    
+    internal func fetchRaceDetailsStatisticsByVictories(withID id: Int) async throws -> FirstCyclingRaceStatisticByVictory {
+        guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "W")]) else {
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL()))
+        }
+        
+        let parserCoordinator = TableParserCoodinator()
         
         let htmlString = try await urlDataLoader.fetchContent(from: url)
         let data = try (parserCoordinator.parse(htmlString) as! ParsedTable).rows

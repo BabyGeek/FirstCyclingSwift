@@ -8,6 +8,11 @@
 import Foundation
 
 public struct FirstCyclingRaceDetailStatistic: Codable, Equatable {
-    public let byYear: [FirstCyclingRaceStatisticByYear]?
-    public let byVictories: FirstCyclingRaceStatisticByVictory?
+    public var byYear: [FirstCyclingRaceStatisticByYear]?
+    public var byVictories: FirstCyclingRaceStatisticByVictory?
+    
+    init(byYear: [FirstCyclingRaceStatisticByYear]? = nil, byVictories: FirstCyclingRaceStatisticByVictory? = nil) {
+        self.byYear = byYear
+        self.byVictories = byVictories
+    }
 }
