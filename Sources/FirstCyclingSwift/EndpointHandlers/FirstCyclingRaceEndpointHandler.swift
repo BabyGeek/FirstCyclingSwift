@@ -102,9 +102,9 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         return statistics
     }
     
-    internal func fetchRaceDetailsStatisticsByYear(withID id: Int) async throws -> [FirstCyclingRaceStatisticByYear] {
+    fileprivate func fetchRaceDetailsStatisticsByYear(withID id: Int) async throws -> [FirstCyclingRaceStatisticByYear] {
         guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "X")]) else {
-            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL()))
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "X")])))
         }
         
         let parserCoordinator = RaceDetailStatisticByYearTableParserCoodinator(
@@ -126,12 +126,16 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
     }
     
     
-    internal func fetchRaceDetailsStatisticsByVictories(withID id: Int) async throws -> FirstCyclingRaceStatisticByVictory {
+    fileprivate func fetchRaceDetailsStatisticsByVictories(withID id: Int) async throws -> FirstCyclingRaceStatisticByVictory {
         guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "W")]) else {
-            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL()))
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "W")])))
         }
         
-        let parserCoordinator = TableParserCoodinator()
+        let parserCoordinator = TableParserCoodinator(
+            columnParser: RaceDetailStatisticByVictoriesColumnParser(
+                flagParserDelegate: MainFlagParser()
+            )
+        )
         
         let htmlString = try await urlDataLoader.fetchContent(from: url)
         let data = try (parserCoordinator.parse(htmlString) as! ParsedTable).rows
@@ -139,13 +143,13 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         guard !data.isEmpty else { throw FirstCyclingDataError.emptyData }
         
         do {
-            return try convertDataResults(fromData: try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted))
+            return try convertDataResults(fromData: try JSONSerialization.data(withJSONObject: ["leaderboard": data], options: .prettyPrinted))
         } catch {
             throw error
         }
     }
     
-    internal func sortEditions(
+    fileprivate func sortEditions(
         _ editions: inout [FirstCyclingRaceEditionSummary],
         by criterion: RaceEditionSortCriterion,
         order: SortOrder

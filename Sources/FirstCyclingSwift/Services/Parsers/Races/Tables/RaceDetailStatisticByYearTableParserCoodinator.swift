@@ -29,7 +29,6 @@ struct RaceDetailStatisticByYearTableParserCoodinator: DataParser {
         let htmlElement = try htmlParser.parseHTML(fromString: htmlString)
         let tables = try tableParser.parseTables(fromHTML: htmlElement)
         
-        var parsedRows = [[String: Any]]()
         var tableHeaders = [String]()
         
         
@@ -47,8 +46,7 @@ struct RaceDetailStatisticByYearTableParserCoodinator: DataParser {
                 
                 let rows = try table.select("tbody tr")
                 for row in rows {
-                    var rowData = try columnParser.parseColumns(fromRow: row, withHeaders: tableHeaders)
-                    leaderboard.append(rowData)
+                    leaderboard.append(try columnParser.parseColumns(fromRow: row, withHeaders: tableHeaders))
                 }
                 
                 let raceData = ParsedRaceDetailStatisticsTable(year: year, leaderboard: leaderboard)

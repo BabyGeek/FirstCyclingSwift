@@ -8,8 +8,13 @@
 import Foundation
 
 internal struct ParsedRaceDetailStatisticsTable {
-    internal let year: Int
-    internal let leaderboard: [[String: Any]]
+    internal var year: Int
+    internal var leaderboard: [[String: Any]]
+    
+    init(year: Int = 0, leaderboard: [[String : Any]] = [[:]]) {
+        self.year = year
+        self.leaderboard = leaderboard
+    }
     
     internal func toDictionnary() -> [String: Any] {
         [
