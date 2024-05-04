@@ -9,9 +9,9 @@ import Foundation
 
 public struct FirstCyclingRaceEndpointHandler: Callable {
     internal var parserCoordinator: HTMLParsingCoordinator
-    internal var urlDataLoader: DataLoader
+    internal var urlDataLoader: FirstCyclingDataLoader
     
-    init(urlDataLoader: DataLoader) {
+    init(urlDataLoader: FirstCyclingDataLoader) {
         self.urlDataLoader = urlDataLoader
         self.parserCoordinator = MainParserCoodinator(
             columnParser: RaceListColumnParser(
@@ -32,10 +32,8 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
                 
         do {
             return try convertDataResults(fromData: try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted))
-        } catch let decodingError as DecodingError {
-            throw FirstCyclingConvertError.decodingError(decodingError)
         } catch {
-            throw FirstCyclingConvertError.serializationError(error.localizedDescription)
+            throw error
         }
     }
 }
