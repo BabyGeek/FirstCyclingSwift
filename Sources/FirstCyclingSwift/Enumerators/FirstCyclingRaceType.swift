@@ -8,24 +8,17 @@
 import Foundation
 
 public enum FirstCyclingRaceType {
-    public struct RaceType {
+    public struct RaceType: Equatable {
         let name: String
         let value: Int
     }
     
     case men(types: [RaceType])
     case women(types: [RaceType])
-    
-    var types: [RaceType] {
-        switch self {
-            case .men(let types), .women(let types):
-                return types
-        }
-    }
 }
 
 extension FirstCyclingRaceType {
-    public static func raceTypes(for gender: FirstCyclingGender) -> FirstCyclingRaceType {
+    internal static func raceTypes(for gender: FirstCyclingGender) -> FirstCyclingRaceType {
         switch gender {
             case .men:
                 return .men(types: [
