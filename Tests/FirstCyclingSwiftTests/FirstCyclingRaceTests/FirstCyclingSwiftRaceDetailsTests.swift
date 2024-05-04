@@ -32,7 +32,6 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
         super.tearDown()
     }
     
-    
     func testFetchRaceDetailsWithEmptyDataThrowsError() async {
         let mockDataLoader = MockEmptyDataLoader()
         let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
@@ -57,6 +56,59 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
         
         do {
             _ = try await handler.fetchRaceDetail(withID: raceID)
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingConvertError.decodingError {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    
+    func testFetchRaceStatsWithEmptyDataThrowsError() async {
+        let mockDataLoader = MockEmptyDataLoader()
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            
+            _ = try await handler.fetchRaceDetailsStatistics(withID: raceID)
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingDataError.emptyData {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchRaceStatsWithByVictoriesInvalidDataThrowsDecodingError() async {
+        let mockDataLoader = MockDataLoader(mockData: [
+            "https://firstcycling.com/race.php?r=1234&k=X": .mockRaceYearStatisticsData,
+            "https://firstcycling.com/race.php?r=1234&k=W": .mockRaceEditionData,
+        ])
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            _ = try await handler.fetchRaceDetailsStatistics(withID: raceID)
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingConvertError.decodingError {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchRaceStatsWithByYearInvalidDataThrowsDecodingError() async {
+        let mockDataLoader = MockDataLoader(mockData: [
+            "https://firstcycling.com/race.php?r=1234&k=X": .mockRaceYearStatisticsBadData,
+            "https://firstcycling.com/race.php?r=1234&k=W": .mockRaceVictoryStatisticsData,
+        ])
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            _ = try await handler.fetchRaceDetailsStatistics(withID: raceID)
             XCTFail("Expected decoding error, but no error was thrown.")
         } catch FirstCyclingConvertError.decodingError {
                 // Then the expected error is thrown

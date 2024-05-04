@@ -12,6 +12,7 @@ enum Mocks: String {
     case mockRaceData = "mockRaceData.html"
     case mockRaceVictoryStatisticsData = "mockRaceVictoryStatisticsData.html"
     case mockRaceYearStatisticsData = "mockRaceYearStatisticsData.html"
+    case mockRaceYearStatisticsBadData = "mockRaceYearStatisticsBadData.html"
     case mockRaceEditionData = "mockRaceEditionData.html"
     case mockRaceListFilterByYearAndTypeData = "mockRaceListFilterByYearAndTypeData.html"
     
