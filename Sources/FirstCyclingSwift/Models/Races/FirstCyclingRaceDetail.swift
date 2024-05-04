@@ -11,6 +11,6 @@ public struct FirstCyclingRaceDetail: Codable, Equatable {
     public let id: Int
     public let name: String
     public let countryName: String
-    public let statistics: FirstCyclingRaceDetailStatistic?
+    public var statistics: FirstCyclingRaceDetailStatistic?
     public let editions: [FirstCyclingRaceEditionSummary]?
 }
