@@ -128,6 +128,111 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
         try checkRaceEditions(race)
     }
     
+    func testFetchRaceDetailsWithSortEditionASCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortOrder: .ascending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 1972, "First race edition year should be 1972")
+        XCTAssertEqual(race.editions?.last?.year, 2024, "Last race edition year should be 2023")
+    }
+    
+    func testFetchRaceDetailsWithSortCategoryASCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .category, sortOrder: .ascending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        try checkRaceEditions(race)
+    }
+    
+    func testFetchRaceDetailsWithSortCategoryDESCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .category, sortOrder: .descending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 2014, "First race edition year should be 2014")
+        XCTAssertEqual(race.editions?.last?.year, 2015, "Last race edition year should be 2015")
+    }
+    
+    func testFetchRaceDetailsWithSortWinnerASCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .winnerName, sortOrder: .ascending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 2024, "First race edition year should be 2024")
+        XCTAssertEqual(race.editions?.last?.year, 1973, "Last race edition year should be 1973")
+    }
+    
+    func testFetchRaceDetailsWithSortWinnerDESCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .winnerName, sortOrder: .descending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 1973, "First race edition year should be 1973")
+        XCTAssertEqual(race.editions?.last?.year, 2024, "Last race edition year should be 2024")
+    }
+    
+    func testFetchRaceDetailsWithSortSecondASCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .secondName, sortOrder: .ascending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 2024, "First race edition year should be 2024")
+        XCTAssertEqual(race.editions?.last?.year, 2017, "Last race edition year should be 2017")
+    }
+    
+    func testFetchRaceDetailsWithSortSecondDESCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .secondName, sortOrder: .descending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 2017, "First race edition year should be 2017")
+        XCTAssertEqual(race.editions?.last?.year, 1972, "Last race edition year should be 1972")
+    }
+    
+    func testFetchRaceDetailsWithSortThirdASCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .thirdName, sortOrder: .ascending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 2024, "First race edition year should be 2024")
+        XCTAssertEqual(race.editions?.last?.year, 2021, "Last race edition year should be 2021")
+    }
+    
+    func testFetchRaceDetailsWithSortThirdDESCReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail(sortCriterion: .thirdName, sortOrder: .descending)
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        try checkRaceAttributes(race)
+        
+        XCTAssertEqual(race.editions?.first?.year, 2021, "First race edition year should be 2021")
+        XCTAssertEqual(race.editions?.last?.year, 1972, "Last race edition year should be 1972")
+    }
     
     func testFetchRaceStatsByYearReturnsExpected() async throws {
         let raceStatistics = try await getRaceDetailStatistics(forStatisticType: .byYear)
@@ -195,8 +300,17 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
         try checkStatisticsByVictory(race.statistics?.byVictories)
     }
     
-    func getRaceDetail(withStatistic statisticType: FirstCyclingRaceDetailStatisticType? = nil) async throws -> FirstCyclingRaceDetail {
-        try await raceProvider.fetchRaceDetail(withID: raceID, withStatistics: statisticType)
+    func getRaceDetail(
+        withStatistic statisticType: FirstCyclingRaceDetailStatisticType? = nil,
+        sortCriterion: RaceEditionSortCriterion = .year,
+        sortOrder: FirstCyclingSwift.SortOrder = .descending
+    ) async throws -> FirstCyclingRaceDetail {
+        try await raceProvider.fetchRaceDetail(
+            withID: raceID,
+            withStatistics: statisticType,
+            sortCriterion: sortCriterion,
+            sortOrder: sortOrder
+        )
     }
     
     func getRaceDetailStatistics(forStatisticType statisticType: FirstCyclingRaceDetailStatisticType) async throws -> FirstCyclingRaceDetailStatistic {
