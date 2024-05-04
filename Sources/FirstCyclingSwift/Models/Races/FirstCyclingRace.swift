@@ -41,6 +41,10 @@ public struct FirstCyclingRace: Identifiable, Codable, Equatable {
         
         self.startDate = start
         
+        if dates.count > 2 {
+            return nil
+        }
+        
         if dates.count == 2 {
             guard let end = dateFormatter.date(from: String(dates[1])) else {
                 return nil
