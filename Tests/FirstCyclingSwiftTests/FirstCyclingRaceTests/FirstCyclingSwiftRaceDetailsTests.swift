@@ -39,7 +39,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
         
         do {
             
-            _ = try await getRaceDetail()
+            _ = try await handler.fetchRaceDetail(withID: raceID)
             XCTFail("Expected decoding error, but no error was thrown.")
         } catch FirstCyclingDataError.emptyData {
                 // Then the expected error is thrown
@@ -51,12 +51,12 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
     
     func testFetchRaceDetailsWithInvalidDataThrowsDecodingError() async {
         let mockDataLoader = MockDataLoader(mockData: [
-            "https://firstcycling.com/race.php?r=1234&": .mockRaceEditionData,
+            "https://firstcycling.com/race.php?r=1234": .mockRaceEditionData,
         ])
         let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
         
         do {
-            _ = try await getRaceDetail()
+            _ = try await handler.fetchRaceDetail(withID: raceID)
             XCTFail("Expected decoding error, but no error was thrown.")
         } catch FirstCyclingConvertError.decodingError {
                 // Then the expected error is thrown
@@ -170,7 +170,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
     func checkStatisticByYear(_ statistics: [FirstCyclingRaceStatisticByYear]?) throws {
         XCTAssertNotNil(statistics, "Race statistics should not be nil")
         XCTAssertEqual(statistics?.first?.year, 2023, "First statistics should be in year 2023")
-        XCTAssertEqual(statistics?.first?.year, 1972, "Last statistics should be in year 1972")
+        XCTAssertEqual(statistics?.last?.year, 1972, "Last statistics should be in year 1972")
         
         try checkFirstStatisticsByYear(statistics?.first)
         try checkLastStatisticsByYear(statistics?.last)
@@ -191,7 +191,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 2,
                 rider: FirstCyclingRider(
                     id: 116465,
-                    name: "Mintegi Iker",
+                    name: "MINTEGI Iker",
                     flag: "🇪🇸",
                     time: "+ 02"
                 )
@@ -200,7 +200,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 3,
                 rider: FirstCyclingRider(
                     id: 116515,
-                    name: "Gutiérrez Jorge",
+                    name: "GUTIÉRREZ Jorge",
                     flag: "🇪🇸",
                     time: "+ 14"
                 )
@@ -209,7 +209,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 4,
                 rider: FirstCyclingRider(
                     id: 104729,
-                    name: "Silva Thomas",
+                    name: "SILVA Thomas",
                     flag: "🇺🇾",
                     time: "+ 1:14"
                 )
@@ -218,7 +218,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 5,
                 rider: FirstCyclingRider(
                     id: 69377,
-                    name: "Autran Jose",
+                    name: "AUTRAN Jose",
                     flag: "🇨🇱",
                     time: "+ 1:14"
                 )
@@ -227,7 +227,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 6,
                 rider: FirstCyclingRider(
                     id: 95149,
-                    name: "Trueba Sergio",
+                    name: "TRUEBA Sergio",
                     flag: "🇪🇸",
                     time: "+ 1:14"
                 )
@@ -236,7 +236,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 7,
                 rider: FirstCyclingRider(
                     id: 111896,
-                    name: "Miralles Sendra Tomas",
+                    name: "MIRALLES SENDRA Tomas",
                     flag: "🇪🇸",
                     time: "+ 1:14"
                 )
@@ -245,7 +245,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 8,
                 rider: FirstCyclingRider(
                     id: 120784,
-                    name: "Fernandez Ramon",
+                    name: "FERNANDEZ Ramon",
                     flag: "🇪🇸",
                     time: "+ 1:14"
                 )
@@ -254,7 +254,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 9,
                 rider: FirstCyclingRider(
                     id: 111785,
-                    name: "Cadena Edgar",
+                    name: "CADENA Edgar",
                     flag: "🇲🇽",
                     time: "+ 1:14"
                 )
@@ -263,7 +263,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
                 position: 10,
                 rider: FirstCyclingRider(
                     id: 155722,
-                    name: "Alustiza Nicolas",
+                    name: "ALUSTIZA Nicolas",
                     flag: "🇪🇸",
                     time: "+ 1:14"
                 )
@@ -278,7 +278,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
             position: 1,
             rider: FirstCyclingRider(
                 id: 4116,
-                name: "José Luis Viejo",
+                name: "VIEJO José Luis",
                 flag: "🇪🇸",
                 time: nil
             )
