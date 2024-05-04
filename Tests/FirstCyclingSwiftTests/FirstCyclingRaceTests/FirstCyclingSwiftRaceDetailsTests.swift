@@ -6,30 +6,311 @@
 //
 
 import XCTest
+@testable import FirstCyclingSwift
 
 final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    var raceProvider: FirstCyclingRaceEndpointHandler!
+    var mockDataLoader: MockDataLoader!
+    let raceID = 1234
+    
+    override func setUp() {
+        super.setUp()
+        
+        mockDataLoader = MockDataLoader(mockData: [
+            "https://firstcycling.com/race.php?r=1234&": .mockRaceData,
+            "https://firstcycling.com/race.php?r=1234&k=X&": .mockRaceYearStatisticsData,
+            "https://firstcycling.com/race.php?r=1234&k=W&": .mockRaceVictoryStatisticsData,
+        ])
+        
+        
+        raceProvider = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    override func tearDown() {
+        mockDataLoader = nil
+        raceProvider = nil
+        super.tearDown()
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    
+    func testFetchRaceDetailsWithEmptyDataThrowsError() async {
+        let mockDataLoader = MockEmptyDataLoader()
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            
+            _ = try await getRaceDetail()
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingDataError.emptyData {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
         }
     }
-
+    
+    func testFetchRaceDetailsWithInvalidDataThrowsDecodingError() async {
+        let mockDataLoader = MockDataLoader(mockData: [
+            "https://firstcycling.com/race.php?r=1234&": .mockRaceEditionData,
+        ])
+        let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
+        
+        do {
+            _ = try await getRaceDetail()
+            XCTFail("Expected decoding error, but no error was thrown.")
+        } catch FirstCyclingConvertError.decodingError {
+                // Then the expected error is thrown
+                // Test passes
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchRaceDetailsReturnsEditionsAndAttributes() async throws {
+        let race = try await getRaceDetail()
+        
+        XCTAssertNil(race.statistics, "Race statistics should be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        checkRaceAttributes(race)
+        checkRaceEditions(race)
+    }
+    
+    
+    func testFetchRaceStatsByYearReturnsExpected() async throws {
+        let race = try await getRaceDetailStatistics(forStatisticType: .byYear)
+        
+        XCTAssertNotNil(race.statistics, "Race statistics should not be nil")
+        
+        XCTAssertNil(race.statistics.byVictories, "Race statistics by victories should be nil")
+        XCTAssertNil(race.editions, "Race editions should be nil")
+        
+        checkRaceAttributes(race)
+        
+        checkStatisticByYear(race.statistics.byYear)
+    }
+    
+    
+    func testFetchRaceStatsByVictoriesReturnsExpected() async throws {
+        let race = try await getRaceDetailStatistics(forStatisticType: .byVictories)
+        
+        XCTAssertNotNil(race.statistics, "Race statistics should not be nil")
+        
+        XCTAssertNil(race.statistics.byYear, "Race statistics by year should be nil")
+        XCTAssertNil(race.editions, "Race editions should be nil")
+        
+        checkRaceAttributes(race)
+        
+        checkStatisticsByVictory(race.statistics.byVictories)
+    }
+    
+    
+    func testFetchRaceDetailsWithAllStatsReturnsExpected() async throws {
+        let race = try await getRaceDetailStatistics(forStatisticType: .all)
+        
+        XCTAssertNotNil(race.statistics, "Race statistics should not be nil")
+        
+        XCTAssertNil(race.editions, "Race editions should be nil")
+        
+        checkRaceAttributes(race)
+        
+        checkStatisticByYear(race.statistics.byYear)
+        checkStatisticsByVictory(race.statistics.byVictories)
+    }
+    
+    func testFetchRaceStatsByYearReturnsExpected() async throws {
+        let race = try await getRaceDetail(withStatistic: .byYear)
+        
+        XCTAssertNil(race.statistics.byVictories, "Race statistics by victories should be nil")
+        
+        XCTAssertNotNil(race.statistics, "Race statistics should not be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        checkRaceAttributes(race)
+        checkRaceEditions(race)
+        
+        checkStatisticByYear(race.statistics.byYear)
+    }
+    
+    func testFetchRaceStatsByVictoriesReturnsExpected() async throws {
+        let race = try await getRaceDetail(withStatistic: .byVictories)
+        
+        XCTAssertNil(race.statistics.byYear, "Race statistics by year should be nil")
+        
+        XCTAssertNotNil(race.statistics, "Race statistics should not be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        checkRaceAttributes(race)
+        checkRaceEditions(race)
+        
+        checkStatisticsByVictory(race.statistics.byVictories)
+    }
+    
+    
+    func testFetchRaceDetailsWithAllStatsReturnsExpected() async throws {
+        let race = try await getRaceDetail(withStatistic: .all)
+                
+        XCTAssertNotNil(race.statistics, "Race statistics should not be nil")
+        XCTAssertNotNil(race.editions, "Race editions should not be nil")
+        
+        checkRaceAttributes(race)
+        checkRaceEditions(race)
+        
+        checkStatisticByYear(race.statistics.byYear)
+        checkStatisticsByVictory(race.statistics.byVictories)
+    }
+    
+    func getRaceDetail(withStatistic statisticType: FirstCyclingRaceDetailStatisticType? = nil) async throws -> FirstCyclingRaceDetail {
+        try await raceProvider.fetchRaceDetail(withID: raceID, withStatistic: statisticType)
+    }
+    
+    func getRaceDetailStatistics(forStatisticType statisticType: FirstCyclingRaceDetailStatisticType) async throws -> FirstCyclingRaceDetailStatistic {
+        try await raceProvider.fetchRaceDetailsStatistics(withID: raceID, type: statisticType)
+    }
+    
+    
+    func checkRaceEditions(_ race: FirstCyclingRaceDetail) throws {
+        let expectedFirstRaceEdition = FirstCyclingRaceEditionSummary(id: 1234, year: 2024, category: "1.12.1")
+        XCTAssertEqual(race.editions.first, expectedFirstRaceEdition, "First race edition should be same as expected")
+        
+        
+        let expectedLastRaceEdition = FirstCyclingRaceEditionSummary(id: 1234, year: 1972, category: "NE", winner: FirstCyclingRider(id: 4116, name: "VIEJO José Luis", flag: "🇪🇸"))
+        XCTAssertEqual(race.editions.last, expectedLastRaceEdition, "Last race edition should be same as expected")
+    }
+    
+    func checkRaceAttributes(_ race: FirstCyclingRaceDetail) throws {
+        XCTAssertEqual(race.id, raceID, "Race id should be \(raceID)")
+        XCTAssertEqual(race.name, "Memorial Valenciaga", "Race name should be Memorial Valenciaga")
+        XCTAssertEqual(race.countryName, "Spain", "Race country name should be Spain")
+    }
+            
+    func checkStatisticByYear(_ statistics: [FirstCyclingRaceStatisticByYear]) throws {
+        XCTAssertNotNil(statistics, "Race statistics should not be nil")
+        XCTAssertEqual(statistics.first.year, 2023, "First statistics should be in year 2023")
+        XCTAssertEqual(statistics.first.year, 1972, "Last statistics should be in year 1972")
+        
+        checkFirstStatisticsByYear(statistics.first)
+        checkLastStatisticsByYear(statistics.last)
+    }
+    
+    func checkFirstStatisticsByYear(_ statistics: FirstCyclingRaceStatisticByYear) {
+        let expectedRankings: [FirstCyclingRiderRank] = [
+            FirstCyclingRiderRank(
+                position: 1,
+                rider: FirstCyclingRider(
+                    id: 100400,
+                    name: "DOMÍNGUEZ David",
+                    flag: "🇪🇸",
+                    time: "4:06:07"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 2,
+                rider: FirstCyclingRider(
+                    id: 116465,
+                    name: "Mintegi Iker",
+                    flag: "🇪🇸",
+                    time: "+ 02"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 3,
+                rider: FirstCyclingRider(
+                    id: 116515,
+                    name: "Gutiérrez Jorge",
+                    flag: "🇪🇸",
+                    time: "+ 14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 4,
+                rider: FirstCyclingRider(
+                    id: 104729,
+                    name: "Silva Thomas",
+                    flag: "🇺🇾",
+                    time: "+ 1:14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 5,
+                rider: FirstCyclingRider(
+                    id: 69377,
+                    name: "Autran Jose",
+                    flag: "🇨🇱",
+                    time: "+ 1:14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 6,
+                rider: FirstCyclingRider(
+                    id: 95149,
+                    name: "Trueba Sergio",
+                    flag: "🇪🇸",
+                    time: "+ 1:14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 7,
+                rider: FirstCyclingRider(
+                    id: 111896,
+                    name: "Miralles Sendra Tomas",
+                    flag: "🇪🇸",
+                    time: "+ 1:14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 8,
+                rider: FirstCyclingRider(
+                    id: 120784,
+                    name: "Fernandez Ramon",
+                    flag: "🇪🇸",
+                    time: "+ 1:14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 9,
+                rider: FirstCyclingRider(
+                    id: 111785,
+                    name: "Cadena Edgar",
+                    flag: "🇲🇽",
+                    time: "+ 1:14"
+                )
+            ),
+            FirstCyclingRiderRank(
+                position: 10,
+                rider: FirstCyclingRider(
+                    id: 155722,
+                    name: "Alustiza Nicolas",
+                    flag: "🇪🇸",
+                    time: "+ 1:14"
+                )
+            )
+        ]
+        
+        XCTAssertEqual(statistics.leaderboard, expectedRankings, "First statistics leaderboard should be same as expected")
+    }
+    
+    func checkLastStatisticsByYear(_ statistics: FirstCyclingRaceStatisticByYear) throws {
+        let expectedRankings: FirstCyclingRiderRank = FirstCyclingRiderRank(
+            position: 1,
+            rider: FirstCyclingRider(
+                id: 4116,
+                name: "José Luis Viejo",
+                flag: "🇪🇸",
+                time: nil
+            )
+        )
+        
+        XCTAssertEqual(statistics.leaderboard, expectedRankings, "Last statistics leaderboard should be same as expected")
+    }
+    
+    func checkStatisticsByVictory(_ statistics: FirstCyclingRaceStatisticByVictory) throws {
+        XCTAssertNotNil(statistics, "Race statistics should not be nil")
+        
+        let expectedFirst = FirstCyclingRiderVictoryStatistic(id: 1780, position: 1, name: "MUJIKA Jokin", nation: FirstCyclingNation(name: "Spain", flag: "🇪🇸"), victories: 2, second: 0, third: 0)
+        XCTAssertEqual(statistics.leaderboard.first, expectedFirst, "The first rider in leaderboard should be as expected")
+        
+        let expectedLast = FirstCyclingRiderVictoryStatistic(id: 5301, position: 4, name: "YANEZ DE LA TORRE Felipe", nation: FirstCyclingNation(name: "Spain", flag: "🇪🇸"), victories: 1, second: 0, third: 0)
+        XCTAssertEqual(statistics.leaderboard.last, expectedLast, "The last rider in leaderboard should be as expected")
+    }
 }
