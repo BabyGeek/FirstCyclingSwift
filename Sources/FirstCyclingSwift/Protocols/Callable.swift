@@ -8,7 +8,6 @@
 import Foundation
 
 internal protocol Callable {
-    var parserCoordinator: HTMLParsingCoordinator { get }
     var urlDataLoader: FirstCyclingDataLoader { get }
     
     func convertDataResults<T: Codable>(fromData data: Data) throws -> T

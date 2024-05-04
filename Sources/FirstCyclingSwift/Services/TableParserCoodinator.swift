@@ -1,5 +1,5 @@
 //
-//  MainParserCoodinator.swift
+//  TableParserCoodinator.swift
 //
 //  Created by Paul Oggero on 30/04/2024.
 //
@@ -7,7 +7,7 @@
 import Foundation
 import SwiftSoup
 
-internal struct MainParserCoodinator: HTMLParsingCoordinator {
+internal struct TableParserCoodinator: DataParser {
     let htmlParser: HTMLParser
     let tableParser: TableParser
     let headerParser: HeaderParser
@@ -25,7 +25,7 @@ internal struct MainParserCoodinator: HTMLParsingCoordinator {
         self.columnParser = columnParser
     }
     
-    internal func parseHTMLDataTable(_ htmlString: String) throws -> ParsedTable {
+    internal func parse(_ htmlString: String) throws -> Any {
         let htmlElement = try htmlParser.parseHTML(fromString: htmlString)
         let tables = try tableParser.parseTables(fromHTML: htmlElement)
         
