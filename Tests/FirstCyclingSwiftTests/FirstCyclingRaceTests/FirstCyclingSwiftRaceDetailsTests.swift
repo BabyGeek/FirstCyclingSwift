@@ -17,9 +17,9 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
         super.setUp()
         
         mockDataLoader = MockDataLoader(mockData: [
-            "https://firstcycling.com/race.php?r=1234&": .mockRaceData,
-            "https://firstcycling.com/race.php?r=1234&k=X&": .mockRaceYearStatisticsData,
-            "https://firstcycling.com/race.php?r=1234&k=W&": .mockRaceVictoryStatisticsData,
+            "https://firstcycling.com/race.php?r=1234": .mockRaceData,
+            "https://firstcycling.com/race.php?r=1234&k=X": .mockRaceYearStatisticsData,
+            "https://firstcycling.com/race.php?r=1234&k=W": .mockRaceVictoryStatisticsData,
         ])
         
         
@@ -153,11 +153,11 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
     
     
     func checkRaceEditions(_ race: FirstCyclingRaceDetail) throws {
-        let expectedFirstRaceEdition = FirstCyclingRaceEditionSummary(id: 1234, year: 2024, category: "1.12.1")
+        let expectedFirstRaceEdition = FirstCyclingRaceEditionSummary(year: 2024, category: "1.12.1")
         XCTAssertEqual(race.editions?.first, expectedFirstRaceEdition, "First race edition should be same as expected")
         
         
-        let expectedLastRaceEdition = FirstCyclingRaceEditionSummary(id: 1234, year: 1972, category: "NE", winner: FirstCyclingRider(id: 4116, name: "VIEJO José Luis", flag: "🇪🇸"))
+        let expectedLastRaceEdition = FirstCyclingRaceEditionSummary(year: 1972, category: "NE", winner: FirstCyclingRider(id: 4116, name: "VIEJO José Luis", flag: "🇪🇸"))
         XCTAssertEqual(race.editions?.last, expectedLastRaceEdition, "Last race edition should be same as expected")
     }
     
