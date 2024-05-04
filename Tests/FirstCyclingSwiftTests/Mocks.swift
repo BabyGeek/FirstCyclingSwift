@@ -10,6 +10,8 @@ import Foundation
 enum Mocks: String {
     case mockRaceListData = "mockRaceListData.html"
     case mockRaceData = "mockRaceData.html"
+    case mockRaceVictoryStatisticsData = "mockRaceVictoryStatisticsData.html"
+    case mockRaceYearStatisticsData = "mockRaceYearStatisticsData.html"
     case mockRaceEditionData = "mockRaceEditionData.html"
     case mockRaceListFilterByYearAndTypeData = "mockRaceListFilterByYearAndTypeData.html"
     
