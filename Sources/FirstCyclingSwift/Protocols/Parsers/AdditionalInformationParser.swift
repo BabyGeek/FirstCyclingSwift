@@ -9,6 +9,6 @@ import Foundation
 import SwiftSoup
 
 protocol AdditionalInformationParser {
-    func parseAdditionalInformations(fromHTML html: Element) throws -> [String]
+    func parseAdditionalInformations(fromHTML html: Element) throws -> [String: String]
 }
 

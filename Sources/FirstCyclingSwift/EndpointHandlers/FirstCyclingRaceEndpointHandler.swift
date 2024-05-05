@@ -72,7 +72,7 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
             var raceDetail: FirstCyclingRaceDetail = .init(
                 id: id,
                 name: additionalInformations.title,
-                countryName: additionalInformations.additionalInformations.first ?? "Not found",
+                countryName: additionalInformations.additionalInformations["country_name"] ?? "Not found",
                 editions: editions
             )
             
