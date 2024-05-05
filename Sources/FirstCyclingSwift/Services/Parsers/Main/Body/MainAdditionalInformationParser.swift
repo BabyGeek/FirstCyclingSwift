@@ -9,7 +9,7 @@ import Foundation
 import SwiftSoup
 
 struct MainAdditionalInformationParser: AdditionalInformationParser {
-    func parseAdditionalInformations(fromHTML html: Element) throws -> [String] {
-        []
+    func parseAdditionalInformations(fromHTML html: Element) throws -> [String: String] {
+        [:]
     }
 }
