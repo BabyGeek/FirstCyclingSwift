@@ -105,7 +105,7 @@ final class FirstCyclingSwiftRaceEditionResultsTests: XCTestCase {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "d MMMM yyyy"
         
-        XCTAssertEqual(raceEdition.startDate, dateFormatter.date(from: expectedStartDate), "Race edition should be 2024")
-        XCTAssertEqual(raceEdition.endDate, dateFormatter.date(from: expectedEndDate), "Race edition should be 2024")
+        XCTAssertEqual(raceEdition.startDate, dateFormatter.date(from: expectedStartDate), "Race edition start date should be 3 April 2024")
+        XCTAssertEqual(raceEdition.endDate, dateFormatter.date(from: expectedEndDate), "Race edition end date should be 30 April 2024")
     }
 }
