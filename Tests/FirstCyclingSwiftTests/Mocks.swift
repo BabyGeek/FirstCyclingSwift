@@ -9,12 +9,19 @@ import Foundation
 
 enum Mocks: String {
     case mockRaceListData = "mockRaceListData.html"
+    case mockRaceListFilterByYearAndTypeData = "mockRaceListFilterByYearAndTypeData.html"
+    
     case mockRaceData = "mockRaceData.html"
     case mockRaceVictoryStatisticsData = "mockRaceVictoryStatisticsData.html"
     case mockRaceYearStatisticsData = "mockRaceYearStatisticsData.html"
     case mockRaceYearStatisticsBadData = "mockRaceYearStatisticsBadData.html"
-    case mockRaceEditionData = "mockRaceEditionData.html"
-    case mockRaceListFilterByYearAndTypeData = "mockRaceListFilterByYearAndTypeData.html"
+    
+    case mockRaceEditionResultData = "mockRaceEditionResultData.html"
+    case mockRaceEditionResultYouthData = "mockRaceEditionResultYouthData.html"
+    case mockRaceEditionResultPointsData = "mockRaceEditionResultPointsData.html"
+    case mockRaceEditionResultMountainData = "mockRaceEditionResultMountainData.html"
+    
+    case mockRaceEditionResultStageData = "mockRaceEditionResultStageData.html"
     
     var url: URL {
         URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("Resources/Mocks/\(self.rawValue)")

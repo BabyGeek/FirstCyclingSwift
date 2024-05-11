@@ -95,7 +95,7 @@ final class FirstCyclingSwiftRaceListTests: XCTestCase {
     
     func testDecodingError() async {
         let mockDataLoader = MockDataLoader(mockData: [
-            "https://firstcycling.com/race.php?": .mockRaceEditionData,
+            "https://firstcycling.com/race.php?": .mockRaceEditionResultData,
         ])
         let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
         

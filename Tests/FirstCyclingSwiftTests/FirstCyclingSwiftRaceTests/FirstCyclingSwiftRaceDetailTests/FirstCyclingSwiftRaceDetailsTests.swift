@@ -50,7 +50,7 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
     
     func testFetchRaceDetailsWithInvalidDataThrowsDecodingError() async {
         let mockDataLoader = MockDataLoader(mockData: [
-            "https://firstcycling.com/race.php?r=1234": .mockRaceEditionData,
+            "https://firstcycling.com/race.php?r=1234": .mockRaceEditionResultData,
         ])
         let handler = FirstCyclingRaceEndpointHandler(urlDataLoader: mockDataLoader)
         
