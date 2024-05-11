@@ -41,7 +41,7 @@ internal enum FirstCyclingEndpoint {
             case .raceDetails(let id):
                 return [.init(name: "r", value: "\(id)")]
             case .raceEdition(let id, let year):
-                return [.init(name: "r", value: id.formatted()), .init(name: "y", value: year.formatted())]
+                return [.init(name: "r", value: "\(id)"), .init(name: "y", value: "\(year)")]
             default:
                 return []
         }

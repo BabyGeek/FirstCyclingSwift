@@ -9,5 +9,5 @@ import Foundation
 
 struct ParsedInformation {
     let title: String
-    let additionalInformations: [String: String]
+    let additionalInformations: [String: [String: String]]
 }

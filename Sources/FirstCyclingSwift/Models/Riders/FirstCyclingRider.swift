@@ -10,12 +10,14 @@ import Foundation
 public struct FirstCyclingRider: Identifiable, Codable, Equatable {
     public let id: Int
     public let name: String
+    public let team: String?
     public let flag: String?
     public let time: String?
     
-    init(id: Int, name: String, flag: String? = nil, time: String? = nil) {
+    init(id: Int, name: String, team: String? = nil, flag: String? = nil, time: String? = nil) {
         self.id = id
         self.name = name
+        self.team = team
         self.flag = flag
         self.time = time
     }
@@ -25,6 +27,10 @@ public struct FirstCyclingRider: Identifiable, Codable, Equatable {
             "id": id,
             "name": name
         ]
+        
+        if let team {
+            dict["team"] = team
+        }
         
         if let flag {
             dict["flag"] = flag

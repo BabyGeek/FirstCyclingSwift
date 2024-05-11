@@ -12,22 +12,26 @@ import SwiftSoup
 internal struct BodyParserCoordinator: DataParser {
     let htmlParser: HTMLParser
     let titleParser: TitleParser
-    let additionalInfoParser: AdditionalInformationParser
+    let additionalInfoParsers: [String: AdditionalInformationParser]
     
     init(
         htmlParser: HTMLParser = MainHTMLParser(),
         titleParser: TitleParser = MainTitleParser(),
-        additionalInfoParser: AdditionalInformationParser = MainAdditionalInformationParser()
+        additionalInfoParsers: [String: AdditionalInformationParser] = ["informations": MainAdditionalInformationParser()]
     ) {
         self.htmlParser = htmlParser
         self.titleParser = titleParser
-        self.additionalInfoParser = additionalInfoParser
+        self.additionalInfoParsers = additionalInfoParsers
     }
     
     func parse(_ htmlString: String) throws -> Any {
         let htmlElement = try htmlParser.parseHTML(fromString: htmlString)
         let title = try titleParser.parseTitle(fromHTML: htmlElement)
-        let additionalInformations = try additionalInfoParser.parseAdditionalInformations(fromHTML: htmlElement)
+        var additionalInformations = [String: [String: String]]()
+        
+        for (name, parser) in additionalInfoParsers {
+            additionalInformations[name] = try parser.parseAdditionalInformations(fromHTML: htmlElement)
+        }
         
         return ParsedInformation(title: title, additionalInformations: additionalInformations)
     }

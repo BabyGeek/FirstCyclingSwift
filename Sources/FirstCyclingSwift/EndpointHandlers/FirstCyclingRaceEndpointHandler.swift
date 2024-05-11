@@ -49,7 +49,7 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         
         let htmlString = try await urlDataLoader.fetchContent(from: url)
         
-        let informationParserCoordinator = BodyParserCoordinator(additionalInfoParser: RaceDetailCountryNameParser())
+        let informationParserCoordinator = BodyParserCoordinator(additionalInfoParsers: ["country": RaceDetailCountryParser()])
         let additionalInformations = try informationParserCoordinator.parse(htmlString) as! ParsedInformation
         
         let parserCoordinator = TableParserCoodinator(
@@ -72,7 +72,7 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
             var raceDetail: FirstCyclingRaceDetail = .init(
                 id: id,
                 name: additionalInformations.title,
-                countryName: additionalInformations.additionalInformations["country_name"] ?? "Not found",
+                countryName: additionalInformations.additionalInformations["country"]?["name"] ?? "Not found",
                 editions: editions
             )
             
@@ -100,6 +100,65 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         }
         
         return statistics
+    }
+    
+    public func fetchRaceEdition(withID id: Int, edition year: Int, withParameters parameters: FirstCyclingRaceEditionQueryParameters? = nil) async throws -> FirstCyclingRaceEdition {
+        guard let url = FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL(withQueryItems: parameters?.toQueryItems()) else {
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL(withQueryItems: parameters?.toQueryItems())))
+        }
+        print(url.absoluteString)
+
+        
+        let htmlString = try await urlDataLoader.fetchContent(from: url)
+        
+        let informationParserCoordinator = BodyParserCoordinator(additionalInfoParsers: [
+            "country": RaceEditionCountryParser(),
+            "category": RaceEditionCategoryParser(),
+            "dates": RaceEditionDateParser()
+        ])
+        
+        let additionalInformations = try informationParserCoordinator.parse(htmlString) as! ParsedInformation
+        
+        let parserCoordinator = TableParserCoodinator(
+            columnParser: RaceEditionColumnParser(
+                flagParserDelegate: MainFlagParser()
+            )
+        )
+        let data = try (parserCoordinator.parse(htmlString) as! ParsedTable).rows
+        
+        guard !data.isEmpty else { throw FirstCyclingDataError.emptyData }
+        
+        do {
+            var leaderboard: [FirstCyclingRaceEditionRanking] = try convertDataResults(
+                fromData: try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+            )
+                
+            leaderboard.sort { (item1, item2) -> Bool in
+                    if item1.position == -1 {
+                        return false
+                    } else if item2.position == -1 {
+                        return true
+                    } else {
+                        return item1.position < item2.position
+                    }
+            }
+            
+            return .init(
+                id: id,
+                year: year,
+                name: additionalInformations.title,
+                category: additionalInformations.additionalInformations["category"]?["name"] ?? "Not found",
+                country: .init(
+                    name: additionalInformations.additionalInformations["country"]?["name"] ?? "Not found",
+                    flag: additionalInformations.additionalInformations["country"]?["flag"]
+                ),
+                startDate: additionalInformations.additionalInformations["dates"]?["start_date"]?.toDate() ?? Date(),
+                endDate: additionalInformations.additionalInformations["dates"]?["start_date"]?.toDate(),
+                leaderboard: leaderboard
+            )
+        } catch {
+            throw error
+        }
     }
     
     fileprivate func fetchRaceDetailsStatisticsByYear(withID id: Int) async throws -> [FirstCyclingRaceStatisticByYear] {

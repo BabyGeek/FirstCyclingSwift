@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+public struct FirstCyclingCountry: Codable, Equatable {
+    public let name: String
+    public let flag: String?
+}
