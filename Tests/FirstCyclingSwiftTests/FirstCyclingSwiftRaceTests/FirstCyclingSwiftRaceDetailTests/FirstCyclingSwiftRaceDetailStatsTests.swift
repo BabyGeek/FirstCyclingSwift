@@ -17,8 +17,9 @@ final class FirstCyclingSwiftRaceDetailStatsTests: XCTestCase {
         super.setUp()
         
         mockDataLoader = MockDataLoader(mockData: [
-            "https://firstcycling.com/race.php?r=1234&k=X": .mockRaceYearStatisticsData,
-            "https://firstcycling.com/race.php?r=1234&k=W": .mockRaceVictoryStatisticsData,
+            "https://firstcycling.com/race.php?r=\(raceID)": .mockRaceData,
+            "https://firstcycling.com/race.php?r=\(raceID)&k=X": .mockRaceYearStatisticsData,
+            "https://firstcycling.com/race.php?r=\(raceID)&k=W": .mockRaceVictoryStatisticsData,
         ])
         
         
@@ -187,7 +188,8 @@ final class FirstCyclingSwiftRaceDetailStatsTests: XCTestCase {
     func checkRaceAttributes(_ race: FirstCyclingRaceDetail) throws {
         XCTAssertEqual(race.id, raceID, "Race id should be \(raceID)")
         XCTAssertEqual(race.name, "Memorial Valenciaga", "Race name should be Memorial Valenciaga")
-        XCTAssertEqual(race.countryName, "Spain", "Race country name should be Spain")
+        XCTAssertEqual(race.country.name, "Spain", "Race country name should be Spain")
+        XCTAssertNil(race.country.flag, "Race country flag should be nil")
     }
     
     func checkFirstStatisticsByYear(_ statistics: FirstCyclingRaceStatisticByYear?) throws {

@@ -207,6 +207,6 @@ final class FirstCyclingSwiftRaceDetailsTests: XCTestCase {
     func checkRaceAttributes(_ race: FirstCyclingRaceDetail) throws {
         XCTAssertEqual(race.id, raceID, "Race id should be \(raceID)")
         XCTAssertEqual(race.name, "Memorial Valenciaga", "Race name should be Memorial Valenciaga")
-        XCTAssertEqual(race.countryName, "Spain", "Race country name should be Spain")
+        XCTAssertEqual(race.country.name, "Spain", "Race country name should be Spain")
     }
 }
