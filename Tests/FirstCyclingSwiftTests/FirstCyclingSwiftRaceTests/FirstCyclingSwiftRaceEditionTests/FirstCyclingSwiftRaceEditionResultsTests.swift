@@ -19,6 +19,9 @@ final class FirstCyclingSwiftRaceEditionResultsTests: XCTestCase {
         
         mockDataLoader = MockDataLoader(mockData: [
             "https://firstcycling.com/race.php?r=\(raceID)&y=\(edition)": .mockRaceEditionResultData,
+            "https://firstcycling.com/race.php?r=\(raceID)&y=\(edition)&l=2": .mockRaceEditionResultDataForYouth,
+            "https://firstcycling.com/race.php?r=\(raceID)&y=\(edition)&l=3": .mockRaceEditionResultDataForPoints,
+            "https://firstcycling.com/race.php?r=\(raceID)&y=\(edition)&l=4": .mockRaceEditionResultDataForMountain,
         ])
         
         
@@ -89,6 +92,81 @@ final class FirstCyclingSwiftRaceEditionResultsTests: XCTestCase {
                 name: "PHAM Van Son",
                 team: "Thanh Hoa",
                 flag: "🇻🇳"
+            ))
+        try checkRaceLastExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedLastLeaderboardRanking)
+    }
+    
+    func testFetchRaceEditionResultYouthJersey() async throws {
+        let raceEdition = try await raceProvider.fetchRaceEdition(withID: raceID, edition: edition)
+        
+        XCTAssertFalse(raceEdition.leaderboard.isEmpty, "Race edition leaderboard should not be empty")
+        
+        let expectedFirstLeaderboardRanking = FirstCyclingRaceEditionRanking(
+            position: 1,
+            rider: FirstCyclingRider(
+                id: 172908,
+                name: "PHAM Le Xuan Loc",
+                team: "Quang Khu 7",
+                flag: "🇻🇳",
+                time: "64:54:13"
+            ))
+        
+        try checkRaceFirstExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedFirstLeaderboardRanking)
+        try checkRaceLastExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedFirstLeaderboardRanking)
+    }
+    
+    func testFetchRaceEditionResultPointsJersey() async throws {
+        let raceEdition = try await raceProvider.fetchRaceEdition(withID: raceID, edition: edition)
+        
+        XCTAssertFalse(raceEdition.leaderboard.isEmpty, "Race edition leaderboard should not be empty")
+        
+        let expectedFirstLeaderboardRanking = FirstCyclingRaceEditionRanking(
+            position: 1,
+            rider: FirstCyclingRider(
+                id: 37278,
+                name: "RIKUNOV Petr",
+                team: "Tap Doan Loc Troi - An Giang",
+                flag: "🇷🇺",
+                points: 253
+            ))
+        try checkRaceFirstExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedFirstLeaderboardRanking)
+        
+        let expectedLastLeaderboardRanking = FirstCyclingRaceEditionRanking(
+            position: 21,
+            rider: FirstCyclingRider(
+                id: 110353,
+                name: "NGUYEN Thang",
+                team: "Ho Chi Minh City - Vinama",
+                flag: "🇻🇳",
+                points: 2
+            ))
+        try checkRaceLastExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedLastLeaderboardRanking)
+    }
+    
+    func testFetchRaceEditionResultMountainJersey() async throws {
+        let raceEdition = try await raceProvider.fetchRaceEdition(withID: raceID, edition: edition)
+        
+        XCTAssertFalse(raceEdition.leaderboard.isEmpty, "Race edition leaderboard should not be empty")
+        
+        let expectedFirstLeaderboardRanking = FirstCyclingRaceEditionRanking(
+            position: 1,
+            rider: FirstCyclingRider(
+                id: 6527,
+                name: "FROLOV Igor",
+                team: "Ho Chi Minh City - New Group",
+                flag: "🇷🇺",
+                points: 50
+            ))
+        try checkRaceFirstExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedFirstLeaderboardRanking)
+        
+        let expectedLastLeaderboardRanking = FirstCyclingRaceEditionRanking(
+            position: 12,
+            rider: FirstCyclingRider(
+                id: 145610,
+                name: "VO Minh Gia Bao",
+                team: "Quan Khu 7",
+                flag: "🇻🇳",
+                points: 6
             ))
         try checkRaceLastExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedLastLeaderboardRanking)
     }
