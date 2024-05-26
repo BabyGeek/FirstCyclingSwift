@@ -77,6 +77,13 @@ internal struct RaceEditionColumnParser: ColumnParser {
                     } else {
                         rowData["rider"] = ["time": value]
                     }
+                } else if header.lowercased() == "points", let intVal = Int(value) {
+                    if var riderDictionary = rowData["rider"] as? [String: Any] {
+                        riderDictionary["points"] = intVal
+                        rowData["rider"] = riderDictionary
+                    } else {
+                        rowData["rider"] = ["points": intVal]
+                    }
                 }
             }
         }
