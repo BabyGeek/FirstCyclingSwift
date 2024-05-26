@@ -13,13 +13,15 @@ public struct FirstCyclingRider: Identifiable, Codable, Equatable {
     public let team: String?
     public let flag: String?
     public let time: String?
+    public let points: Int?
     
-    init(id: Int, name: String, team: String? = nil, flag: String? = nil, time: String? = nil) {
+    init(id: Int, name: String, team: String? = nil, flag: String? = nil, time: String? = nil, points: Int? = nil) {
         self.id = id
         self.name = name
         self.team = team
         self.flag = flag
         self.time = time
+        self.points = points
     }
     
     internal func toDictionary() -> [String: Any] {
@@ -38,6 +40,10 @@ public struct FirstCyclingRider: Identifiable, Codable, Equatable {
         
         if let time {
             dict["time"] = time
+        }
+        
+        if let points {
+            dict["points"] = points
         }
         
         return dict
