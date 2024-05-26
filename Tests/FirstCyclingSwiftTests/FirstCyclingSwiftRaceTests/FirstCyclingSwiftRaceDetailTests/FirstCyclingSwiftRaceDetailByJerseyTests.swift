@@ -55,7 +55,7 @@ final class FirstCyclingSwiftRaceDetailByJerseyTests: XCTestCase {
             category: "NE",
             winner: .init(
                 id: 37278,
-                name: "RIKHUNOV Petr",
+                name: "RIKUNOV Petr",
                 flag: "🇷🇺"
             ),
             second: .init(
@@ -94,7 +94,7 @@ final class FirstCyclingSwiftRaceDetailByJerseyTests: XCTestCase {
             ),
             second: .init(
                 id: 37278,
-                name: "RIKHUNOV Petr",
+                name: "RIKUNOV Petr",
                 flag: "🇷🇺"
             ),
             third: .init(
