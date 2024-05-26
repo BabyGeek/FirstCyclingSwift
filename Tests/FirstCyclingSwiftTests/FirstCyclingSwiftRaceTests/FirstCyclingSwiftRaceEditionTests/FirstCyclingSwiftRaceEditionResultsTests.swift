@@ -79,8 +79,7 @@ final class FirstCyclingSwiftRaceEditionResultsTests: XCTestCase {
                 time: "64:32:08"
             ))
         
-        XCTAssertEqual(raceEdition.leaderboard.first, expectedFirstLeaderboardRanking, "First leaderboard rank should equal the expected ranking")
-        
+        try checkRaceFirstExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedFirstLeaderboardRanking)
         
         let expectedLastLeaderboardRanking = FirstCyclingRaceEditionRanking(
             position: -1,
@@ -91,8 +90,7 @@ final class FirstCyclingSwiftRaceEditionResultsTests: XCTestCase {
                 team: "Thanh Hoa",
                 flag: "🇻🇳"
             ))
-        
-        XCTAssertEqual(raceEdition.leaderboard.last, expectedLastLeaderboardRanking, "First leaderboard rank should equal the expected ranking")
+        try checkRaceLastExpectedLeaderboard(raceEdition, expedtedLeaderboard: expectedLastLeaderboardRanking)
     }
     
     func checkRaceEditionAttributes(_ raceEdition: FirstCyclingRaceEdition) throws {
@@ -107,5 +105,13 @@ final class FirstCyclingSwiftRaceEditionResultsTests: XCTestCase {
         
         XCTAssertEqual(raceEdition.startDate, dateFormatter.date(from: expectedStartDate), "Race edition start date should be 3 April 2024")
         XCTAssertEqual(raceEdition.endDate, dateFormatter.date(from: expectedEndDate), "Race edition end date should be 30 April 2024")
+    }
+    
+    func checkRaceFirstExpectedLeaderboard(_ raceEdition: FirstCyclingRaceEdition, expedtedLeaderboard: FirstCyclingRaceEditionRanking) throws {
+        XCTAssertEqual(raceEdition.leaderboard.first, expedtedLeaderboard, "First edition leaderboard should be as expected")
+    }
+    
+    func checkRaceLastExpectedLeaderboard(_ raceEdition: FirstCyclingRaceEdition, expedtedLeaderboard: FirstCyclingRaceEditionRanking) throws {
+        XCTAssertEqual(raceEdition.leaderboard.last, expedtedLeaderboard, "Last edition leaderboard should be as expected")
     }
 }
