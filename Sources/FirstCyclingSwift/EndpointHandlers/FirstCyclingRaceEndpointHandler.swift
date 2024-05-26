@@ -39,12 +39,13 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
     
     public func fetchRaceDetail(
         withID id: Int,
+        withGeneralClassification generalClassification: FirstCyclingGeneralClassification = .overall,
         withStatistics statistics: FirstCyclingRaceDetailStatisticType? = nil,
         sortCriterion: RaceEditionSortCriterion = .year,
         sortOrder: SortOrder = .descending
     ) async throws -> FirstCyclingRaceDetail {
-        guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL() else {
-            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL()))
+        guard let url = FirstCyclingEndpoint.raceDetails(id: id, generalClassification: generalClassification).getURL() else {
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id, generalClassification: generalClassification).getURL()))
         }
         
         let htmlString = try await urlDataLoader.fetchContent(from: url)
@@ -165,8 +166,8 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
     }
     
     fileprivate func fetchRaceDetailsStatisticsByYear(withID id: Int) async throws -> [FirstCyclingRaceStatisticByYear] {
-        guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "X")]) else {
-            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "X")])))
+        guard let url = FirstCyclingEndpoint.raceDetails(id: id, generalClassification: .overall).getURL(withQueryItems: [.init(name: "k", value: "X")]) else {
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id, generalClassification: .overall).getURL(withQueryItems: [.init(name: "k", value: "X")])))
         }
         
         let parserCoordinator = RaceDetailStatisticByYearTableParserCoodinator(
@@ -189,8 +190,8 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
     
     
     fileprivate func fetchRaceDetailsStatisticsByVictories(withID id: Int) async throws -> FirstCyclingRaceStatisticByVictory {
-        guard let url = FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "W")]) else {
-            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id).getURL(withQueryItems: [.init(name: "k", value: "W")])))
+        guard let url = FirstCyclingEndpoint.raceDetails(id: id, generalClassification: .overall).getURL(withQueryItems: [.init(name: "k", value: "W")]) else {
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceDetails(id: id, generalClassification: .overall).getURL(withQueryItems: [.init(name: "k", value: "W")])))
         }
         
         let parserCoordinator = TableParserCoodinator(
