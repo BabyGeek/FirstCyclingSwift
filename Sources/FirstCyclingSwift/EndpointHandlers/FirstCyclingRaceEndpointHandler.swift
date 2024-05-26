@@ -110,8 +110,6 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         guard let url = FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL() else {
             throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL()))
         }
-        print(url.absoluteString)
-
         
         let htmlString = try await urlDataLoader.fetchContent(from: url)
         
