@@ -72,7 +72,10 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
             var raceDetail: FirstCyclingRaceDetail = .init(
                 id: id,
                 name: additionalInformations.title,
-                countryName: additionalInformations.additionalInformations["country"]?["name"] ?? "Not found",
+                country: .init(
+                    name: additionalInformations.additionalInformations["country"]?["name"] ?? "Not found",
+                    flag: additionalInformations.additionalInformations["country"]?["flag"]
+                ) ,
                 editions: editions
             )
             
@@ -102,9 +105,9 @@ public struct FirstCyclingRaceEndpointHandler: Callable {
         return statistics
     }
     
-    public func fetchRaceEdition(withID id: Int, edition year: Int, withParameters parameters: FirstCyclingRaceEditionQueryParameters? = nil) async throws -> FirstCyclingRaceEdition {
-        guard let url = FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL(withQueryItems: parameters?.toQueryItems()) else {
-            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL(withQueryItems: parameters?.toQueryItems())))
+    public func fetchRaceEdition(withID id: Int, edition year: Int) async throws -> FirstCyclingRaceEdition {
+        guard let url = FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL() else {
+            throw FirstCyclingURLError.invalidURL(String(describing: FirstCyclingEndpoint.raceEdition(id: id, year: year).getURL()))
         }
         print(url.absoluteString)
 
